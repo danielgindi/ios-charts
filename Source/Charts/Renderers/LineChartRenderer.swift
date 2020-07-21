@@ -241,6 +241,10 @@ open class LineChartRenderer: LineRadarRenderer
         context.beginPath()
         context.addPath(cubicPath)
         context.setStrokeColor(drawingColor.cgColor)
+        context.setLineCap(CGLineCap.butt)
+        context.setLineJoin(CGLineJoin.round)
+        context.setMiterLimit(10.0)
+        context.setFlatness(0.6)
         context.strokePath()
         
         context.restoreGState()
