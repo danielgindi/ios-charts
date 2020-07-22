@@ -110,6 +110,9 @@ open class PieChartDataSet: ChartDataSet, IPieChartDataSet
 
     /// the color for the highlighted sector
     open var highlightColor: NSUIColor? = nil
+    
+    /// get/sets the count for hidden values
+    open var hiddenValueCount: Int = 0
 
     // MARK: - NSCopying
 
@@ -130,6 +133,8 @@ open class PieChartDataSet: ChartDataSet, IPieChartDataSet
         copy.entryLabelFont = entryLabelFont
         copy.entryLabelColor = entryLabelColor
         copy.highlightColor = highlightColor
+        copy.hiddenValueCount = hiddenValueCount
+
         return copy
     }
 }

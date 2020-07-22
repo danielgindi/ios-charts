@@ -60,5 +60,9 @@ public protocol IPieChartDataSet: IChartDataSet
 
     /// get/sets the color for the highlighted sector
     var highlightColor: NSUIColor? { get set }
+    
+    /// get/sets the count for hidden values
+    var hiddenValueCount: Int { get set }
+
 
 }

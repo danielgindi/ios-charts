@@ -356,7 +356,7 @@ open class PieChartRenderer: DataRenderer
 
             guard let formatter = dataSet.valueFormatter else { continue }
 
-            for j in 0 ..< dataSet.entryCount
+            for j in 0 ..< dataSet.entryCount - dataSet.hiddenValueCount
             {
                 guard let e = dataSet.entryForIndex(j) else { continue }
                 let pe = e as? PieChartDataEntry
