@@ -153,6 +153,25 @@
         
         [chartView setNeedsDisplay];
     }
+
+    if ([key isEqualToString:@"toggleBarOutline"])
+    {
+        UIEdgeInsets inset = UIEdgeInsetsZero;
+        inset.right = 5;
+        BarChartBarValueOutline *outline1 = [[BarChartBarValueOutline alloc] initWithColor:[UIColor colorWithRed:0.85 green:0.89 blue:1 alpha:1] insets:inset];
+        inset.right = 3;
+        BarChartBarValueOutline *outline2 = [[BarChartBarValueOutline alloc] initWithColor:[UIColor colorWithRed:0.2 green:0.32 blue:0.6 alpha:1] insets:inset];
+
+        for (id<BarChartDataSetProtocol, NSObject> set in chartView.data.dataSets)
+        {
+            if ([set conformsToProtocol:@protocol(BarChartDataSetProtocol)])
+            {
+                set.barValueOutlines = @[outline1, outline2];
+            }
+        }
+
+        [chartView setNeedsDisplay];
+    }
 }
 
 #pragma mark - Actions

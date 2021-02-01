@@ -12,6 +12,19 @@
 import Foundation
 import CoreGraphics
 
+@objc open class BarChartBarValueOutline: NSObject
+{
+    @objc public var color: NSUIColor
+    @objc public var insets: NSUIEdgeInsets
+
+    @objc public init(color: NSUIColor = .black, insets: NSUIEdgeInsets = .zero)
+    {
+        self.color = color
+        self.insets = insets
+        super.init()
+    }
+}
+
 @objc
 public protocol BarChartDataSetProtocol: BarLineScatterCandleBubbleChartDataSetProtocol
 {
@@ -39,4 +52,7 @@ public protocol BarChartDataSetProtocol: BarLineScatterCandleBubbleChartDataSetP
     
     /// array of labels used to describe the different values of the stacked bars
     var stackLabels: [String] { get set }
+
+    /// the color and thickness of the bar rect-outlines. The bar rect outline is a line(s) on the edge of the value bar
+    var barValueOutlines: [BarChartBarValueOutline] { get set }
 }

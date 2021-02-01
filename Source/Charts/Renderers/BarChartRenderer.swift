@@ -356,12 +356,17 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         }
         
         let isSingleColor = dataSet.colors.count == 1
+		var barFillColor: NSUIColor
         
         if isSingleColor
         {
-            context.setFillColor(dataSet.color(atIndex: 0).cgColor)
+            barFillColor = dataSet.color(atIndex: 0)
         }
-        
+		else    //fix the compiler warning about using uninitialized value
+		{
+			barFillColor = .black
+		}
+
         // In case the chart is stacked, we need to accomodate individual bars within accessibilityOrdereredElements
         let isStacked = dataSet.isStacked
         let stackSize = isStacked ? dataSet.stackSize : 1
@@ -376,17 +381,41 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
             if !isSingleColor
             {
                 // Set the color for the currently drawn value. If the index is out of bounds, reuse colors.
-                context.setFillColor(dataSet.color(atIndex: j).cgColor)
+                barFillColor = dataSet.color(atIndex: j)
             }
-            
-            context.fill(barRect)
-            
+
+			context.saveGState()
+
+            var maxEdgeInset: NSUIEdgeInsets = .zero
+
+            for outline in dataSet.barValueOutlines
+            {
+                let newMaxEdgeInset = maxEdgeInset + outline.insets
+                let nextRectSize = barRect.inset(by: newMaxEdgeInset).size  //if access width/height of the rect - always positive values
+                if nextRectSize.width < 1 || nextRectSize.height < 1
+                {
+                    break
+                }
+                let outlineRect = barRect.inset(by: maxEdgeInset)
+                context.setFillColor(outline.color.cgColor)
+                context.fill(outlineRect)
+
+                maxEdgeInset = newMaxEdgeInset
+            }
+
+            let barRectInsideOutline = barRect.inset(by: maxEdgeInset)
+
+            context.setFillColor(barFillColor.cgColor)
+            context.fill(barRectInsideOutline)
+
             if drawBorder
             {
                 context.setStrokeColor(borderColor.cgColor)
                 context.setLineWidth(borderWidth)
-                context.stroke(barRect)
+                context.stroke(barRectInsideOutline)
             }
+
+			context.restoreGState()
 
             // Create and append the corresponding accessibility element to accessibilityOrderedElements
             if let chart = dataProvider as? BarChartView
@@ -483,7 +512,21 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                     {
                         guard let e = dataSet.entryForIndex(j) as? BarChartDataEntry else { continue }
                         
-                        let rect = buffer[j]
+                        var maxEdgeInset: NSUIEdgeInsets = .zero
+                        let barRect = buffer[j]
+                        for outline in dataSet.barValueOutlines
+                        {
+                            let newMaxEdgeInset = maxEdgeInset + outline.insets
+                            let nextRectSize = barRect.inset(by: newMaxEdgeInset).size  //if access width/height of the rect - always positive values
+                            if nextRectSize.width < 1 || nextRectSize.height < 1
+                            {
+                                break
+                            }
+
+                            maxEdgeInset = newMaxEdgeInset
+                        }
+
+                        let rect = barRect.inset(by:maxEdgeInset) //apply insets so the text is centered in the bar
                         
                         let x = rect.origin.x + rect.size.width / 2.0
                         

@@ -50,6 +50,8 @@ enum Option {
     case toggleYLabels
     case toggleRotate
     case toggleHighlightCircle
+    //BarChart
+    case toggleBarOutline
     
     var label: String {
         switch self {
@@ -91,6 +93,8 @@ enum Option {
         case .toggleYLabels: return "Toggle Y-Labels"
         case .toggleRotate: return "Toggle Rotate"
         case .toggleHighlightCircle: return "Toggle highlight circle"
+        // Bar Chart
+        case .toggleBarOutline: return "Toggle Bar Outline"
         }
     }
 }
@@ -175,6 +179,26 @@ class DemoBaseViewController: UIViewController, ChartViewDelegate {
                 }
             }
             chartView.setNeedsDisplay()
+
+        case .toggleBarOutline:
+            let outline1 = BarChartBarValueOutline(color:NSUIColor.magenta)
+            outline1.insets.top = 5
+            outline1.insets.left = 7
+            outline1.insets.bottom = 2
+            outline1.insets.right = 5
+            let outline2 = BarChartBarValueOutline(color:NSUIColor.brown)
+            outline2.insets.top = 4
+            outline2.insets.left = 3
+            outline2.insets.bottom = 6
+            outline2.insets.right = 12
+
+            for set in chartView.data!.dataSets {
+                if let set = set as? BarChartDataSet {
+                    set.barValueOutlines = [outline1, outline2]
+                }
+            }
+            chartView.setNeedsDisplay()
+
         default:
             break
         }
