@@ -34,6 +34,10 @@ class StackedBarChartViewController: DemoBaseViewController {
         // Do any additional setup after loading the view.
         self.title = "Stacked Bar Chart"
         self.options = [.toggleValues,
+                        .toggleValuesPosition,
+                        .toggleValuesSideFlexible,
+                        .toggleValueColorsAdjustment,
+                        .toggleValueColorsSecondary,
                         .toggleIcons,
                         .toggleHighlight,
                         .animateX,

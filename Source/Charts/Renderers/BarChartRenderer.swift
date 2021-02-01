@@ -437,10 +437,13 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 let barData = dataProvider.barData
                 else { return }
 
-            let valueOffsetPlus: CGFloat = 4.5
+            let valueOffsetPlus: CGFloat = dataProvider.valuesOffset
             var posOffset: CGFloat
             var negOffset: CGFloat
+            var posOffsetSideFallback: CGFloat
+            var negOffsetSideFallback: CGFloat
             let drawValueAboveBar = dataProvider.isDrawValueAboveBarEnabled
+            let chartBackgroundColor = NSUIColor.white //TODO: get the actual chart background color
             
             for dataSetIndex in barData.indices
             {
@@ -457,29 +460,142 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 let valueFont = dataSet.valueFont
                 let valueTextHeight = valueFont.lineHeight
                 posOffset = (drawValueAboveBar ? -(valueTextHeight + valueOffsetPlus) : valueOffsetPlus)
+                posOffsetSideFallback = (!drawValueAboveBar ? -(valueTextHeight + valueOffsetPlus) : valueOffsetPlus)
                 negOffset = (drawValueAboveBar ? valueOffsetPlus : -(valueTextHeight + valueOffsetPlus))
+                negOffsetSideFallback = (!drawValueAboveBar ? valueOffsetPlus : -(valueTextHeight + valueOffsetPlus))
                 
                 if isInverted
                 {
                     posOffset = -posOffset - valueTextHeight
+                    posOffsetSideFallback = -posOffsetSideFallback - valueTextHeight
                     negOffset = -negOffset - valueTextHeight
+                    negOffsetSideFallback = -negOffsetSideFallback - valueTextHeight
                 }
                 
                 let buffer = _buffers[dataSetIndex]
                 
                 let formatter = dataSet.valueFormatter
                 
-                let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
-                
                 let phaseY = animator.phaseY
-                
+
                 let iconsOffset = dataSet.iconsOffset
+
+                func drawValueAndIconAndContinue(for e:BarChartDataEntry, in rect: CGRect, index j: Int, drawAbove: Bool, value: Double, anchor: CGPoint, angleRadians: CGFloat, backgroundColor outerColor: NSUIColor, ignoreAnimator: Bool = true) -> Bool
+                {
+                    let x = rect.origin.x + rect.size.width / 2.0
+
+                    if !viewPortHandler.isInBoundsRight(x)
+                    {
+                        return false
+                    }
+
+                    if !viewPortHandler.isInBoundsLeft(x)
+                    {
+                        return true
+                    }
+
+                    let animatorTransform = (CGFloat)(ignoreAnimator ? 1.0 : phaseY)
+                    let y = rect.origin.y * animatorTransform
+                    //allow to draw a value even is bar is slightly out of bounds but value should be inside bar
+                    if !(viewPortHandler.isInBoundsY(y) || ((dataProvider.isDrawValueSideFlexible || !drawValueAboveBar) && (
+                        viewPortHandler.isInBoundsY(y - dataProvider.valuesOffset) ||
+                            viewPortHandler.isInBoundsY(y + dataProvider.valuesOffset)
+                        )
+                        ))
+                    {
+                        return true
+                    }
+
+                    if dataSet.isDrawValuesEnabled
+                    {
+                        var color = dataSet.valueTextColorAt(j)
+                        var backgroundColor = outerColor
+                        var yPos = y + (drawAbove
+                            ? posOffset
+                            : rect.height + negOffset)
+
+                        if drawValueAboveBar
+                        {
+                            if dataProvider.isDrawValueSideFlexible && (!viewPortHandler.isInBoundsY(yPos) || !viewPortHandler.isInBoundsY(yPos + valueTextHeight))
+                            {
+                                yPos = y + (drawAbove
+                                    ? posOffsetSideFallback
+                                    : rect.height + negOffsetSideFallback)
+
+                                color = dataSet.valueTextColorSecondaryAt(j)
+                                backgroundColor = dataSet.color(atIndex: j)
+                            }
+                            else
+                            {
+                                if dataProvider.isDrawBarShadowEnabled
+                                {
+                                    backgroundColor = dataSet.barShadowColor
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if dataProvider.isDrawValueSideFlexible && (yPos + valueTextHeight > rect.maxY || yPos < rect.minY)
+                            {
+                                yPos = y + (drawAbove
+                                    ? posOffsetSideFallback
+                                    : rect.height + negOffsetSideFallback)
+
+                                color = dataSet.valueTextColorSecondaryAt(j)
+                                if dataProvider.isDrawBarShadowEnabled
+                                {
+                                    backgroundColor = dataSet.barShadowColor
+                                }
+                            }
+                            else
+                            {
+                                backgroundColor = dataSet.color(atIndex: j)
+                            }
+                        }
+                        if dataSet.valueColorsAdjustment
+                        {
+                            if color.distance(from: backgroundColor) < 0.2
+                            {
+                                color = backgroundColor.inverseColor()
+                            }
+                        }
+                        drawValue(
+                            context: context,
+                            value: formatter.stringForValue(
+                                value,
+                                entry: e,
+                                dataSetIndex: dataSetIndex,
+                                viewPortHandler: viewPortHandler),
+                            xPos: x,
+                            yPos: yPos * animatorTransform,
+                            font: valueFont,
+                            align: .center,
+                            color: color,
+                            anchor: anchor,
+                            angleRadians: angleRadians)
+                    }
+
+                    if let icon = e.icon, dataSet.isDrawIconsEnabled
+                    {
+                        var px = x
+                        var py = rect.minY + (drawAbove
+                            ? posOffset
+                            : rect.height + negOffset)
+
+                        px += iconsOffset.x
+                        py += iconsOffset.y
+
+                        context.drawImage(icon,
+                                          atCenter: CGPoint(x: px, y: py * animatorTransform),
+                                          size: icon.size)
+                    }
+                    return true
+                }
         
                 // if only single values are drawn (sum)
                 if !dataSet.isStacked
                 {
-                    let range = 0 ..< Int(ceil(Double(dataSet.entryCount) * animator.phaseX))
-                    for j in range
+                    for j in 0 ..< Int(ceil(Double(dataSet.entryCount) * animator.phaseX))
                     {
                         guard let e = dataSet.entryForIndex(j) as? BarChartDataEntry else { continue }
                         
@@ -493,50 +609,31 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                             viewPortHandler.isInBoundsLeft(x)
                             else { continue }
                         
-                        let val = e.y
-                        
-                        if dataSet.isDrawValuesEnabled
+                        let backgroundColor: NSUIColor
+                        if dataProvider.isDrawBarShadowEnabled
                         {
-                            drawValue(
-                                context: context,
-                                value: formatter.stringForValue(
-                                    val,
-                                    entry: e,
-                                    dataSetIndex: dataSetIndex,
-                                    viewPortHandler: viewPortHandler),
-                                xPos: x,
-                                yPos: val >= 0.0
-                                    ? (rect.origin.y + posOffset)
-                                    : (rect.origin.y + rect.size.height + negOffset),
-                                font: valueFont,
-                                align: .center,
-                                color: dataSet.valueTextColorAt(j),
-                                anchor: CGPoint(x: 0.5, y: 0.5),
-                                angleRadians: angleRadians)
+                            backgroundColor = dataSet.barShadowColor
                         }
-                        
-                        if let icon = e.icon, dataSet.isDrawIconsEnabled
+                        else
                         {
-                            var px = x
-                            var py = val >= 0.0
-                                ? (rect.origin.y + posOffset)
-                                : (rect.origin.y + rect.size.height + negOffset)
-                            
-                            px += iconsOffset.x
-                            py += iconsOffset.y
-                            
-                            context.drawImage(icon,
-                                              atCenter: CGPoint(x: px, y: py),
-                                              size: icon.size)
+                            backgroundColor = chartBackgroundColor
                         }
-                        
+                        if !drawValueAndIconAndContinue(for: e, in: rect, index: j, drawAbove: e.y >= 0.0, value: e.y,
+                                                        anchor: CGPoint(x: 0.5, y: 0.5),
+                                                        angleRadians: angleRadians,
+                                                        backgroundColor: backgroundColor)
+                        {
+                            break
+                        }
                     }
                 }
                 else
                 {
                     // if we have stacks
-                    
+
                     var bufferIndex = 0
+//index for the colors to count each bar even when move across stacks
+                    
                     let lastIndex = ceil(Double(dataSet.entryCount) * animator.phaseX)
 
                     for index in 0 ..< Int(lastIndex)
@@ -544,123 +641,87 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                         guard let e = dataSet.entryForIndex(index) as? BarChartDataEntry else { continue }
                         
                         let vals = e.yValues
-                        
-                        let rect = buffer[bufferIndex]
-                        
-                        let x = rect.origin.x + rect.size.width / 2.0
-                        
-                        // we still draw stacked bars, but there is one non-stacked in between
-                        if let values = vals
-                        {
-                            // draw stack values
-                            var transformed = [CGPoint]()
 
+                        // we still draw stacked bars, but there is one non-stacked in between
+                        if let vals = vals
+                        {
                             var posY = 0.0
                             var negY = -e.negativeSum
-
-                            for value in values
+                            for k in vals.indices
                             {
-                                let y: Double
-                                
+                                let value = vals[k]
+
                                 if value == 0.0 && (posY == 0.0 || negY == 0.0)
                                 {
                                     // Take care of the situation of a 0.0 value, which overlaps a non-zero bar
-                                    y = value
+                                    //https://github.com/danielgindi/Charts/issues/1191
+                                    //https://github.com/danielgindi/Charts/pull/1195
+//                                    y = value
                                 }
                                 else if value >= 0.0
                                 {
                                     posY += value
-                                    y = posY
                                 }
                                 else
                                 {
-                                    y = negY
                                     negY -= value
                                 }
 
-                                transformed.append(CGPoint(x: 0.0, y: CGFloat(y * phaseY)))
-                            }
+                                let val = value
+                                let rect = buffer[bufferIndex]
+                                let drawBelow = (val == 0.0 && negY == 0.0 && posY > 0.0) || val < 0.0
 
-                            trans.pointValuesToPixel(&transformed)
-
-                            for (value, transformed) in zip(values, transformed)
-                            {
-                                let drawBelow = (value == 0.0 && negY == 0.0 && posY > 0.0) || value < 0.0
-                                let y = transformed.y + (drawBelow ? negOffset : posOffset)
-
-                                guard viewPortHandler.isInBoundsRight(x) else { break }
-                                guard viewPortHandler.isInBoundsY(y),
-                                    viewPortHandler.isInBoundsLeft(x)
-                                    else { continue }
-
-                                if dataSet.isDrawValuesEnabled
+                                let backgroundColor: NSUIColor
+                                if k == 0 && val < 0 || k == vals.count - 1 && val >= 0
                                 {
-                                    drawValue(
-                                        context: context,
-                                        value: formatter.stringForValue(
-                                            value,
-                                            entry: e,
-                                            dataSetIndex: dataSetIndex,
-                                            viewPortHandler: viewPortHandler),
-                                        xPos: x,
-                                        yPos: y,
-                                        font: valueFont,
-                                        align: .center,
-                                        color: dataSet.valueTextColorAt(index),
-                                        anchor: CGPoint(x: 0.5, y: 0.5),
-                                        angleRadians: angleRadians)
+                                    if dataProvider.isDrawBarShadowEnabled
+                                    {
+                                        backgroundColor = dataSet.barShadowColor
+                                    }
+                                    else
+                                    {
+                                        backgroundColor = chartBackgroundColor
+                                    }
+                                }
+                                else
+                                {
+                                    backgroundColor = dataSet.color(atIndex: k + (val >= 0 ? 1 : -1))
                                 }
 
-                                if let icon = e.icon, dataSet.isDrawIconsEnabled
+                                if !drawValueAndIconAndContinue(for: e, in: rect, index: bufferIndex, drawAbove: !drawBelow, value: val,
+                                                                anchor: CGPoint(x: 0.5, y: 0.5),
+                                                                angleRadians: angleRadians,
+                                                                backgroundColor: backgroundColor,
+                                                                ignoreAnimator: false)
                                 {
-                                    context.drawImage(icon,
-                                                      atCenter: CGPoint(x: x + iconsOffset.x,
-                                                                      y: y + iconsOffset.y),
-                                                      size: icon.size)
+                                    break
                                 }
+
+                                bufferIndex += 1
                             }
                         }
-                        else
+                        else // we still draw stacked bars, but there is one non-stacked in between
                         {
-                            guard viewPortHandler.isInBoundsRight(x) else { break }
-                            guard viewPortHandler.isInBoundsY(rect.origin.y),
-                                viewPortHandler.isInBoundsLeft(x) else { continue }
+                            let backgroundColor: NSUIColor
+                            if dataProvider.isDrawBarShadowEnabled
+                            {
+                                backgroundColor = dataSet.barShadowColor
+                            }
+                            else
+                            {
+                                backgroundColor = chartBackgroundColor
+                            }
+                            let rect = buffer[bufferIndex]
 
-                            if dataSet.isDrawValuesEnabled
+                            if !drawValueAndIconAndContinue(for: e, in: rect, index: bufferIndex, drawAbove: e.y >= 0, value: e.y,
+                                                            anchor: CGPoint(x: 0.5, y: 0.5),
+                                                            angleRadians: angleRadians,
+                                                            backgroundColor: backgroundColor)
                             {
-                                drawValue(
-                                    context: context,
-                                    value: formatter.stringForValue(
-                                        e.y,
-                                        entry: e,
-                                        dataSetIndex: dataSetIndex,
-                                        viewPortHandler: viewPortHandler),
-                                    xPos: x,
-                                    yPos: rect.origin.y +
-                                        (e.y >= 0 ? posOffset : negOffset),
-                                    font: valueFont,
-                                    align: .center,
-                                    color: dataSet.valueTextColorAt(index),
-                                    anchor: CGPoint(x: 0.5, y: 0.5),
-                                    angleRadians: angleRadians)
+                                break
                             }
-                            
-                            if let icon = e.icon, dataSet.isDrawIconsEnabled
-                            {
-                                var px = x
-                                var py = rect.origin.y +
-                                    (e.y >= 0 ? posOffset : negOffset)
-                                
-                                px += iconsOffset.x
-                                py += iconsOffset.y
-                                
-                                context.drawImage(icon,
-                                                  atCenter: CGPoint(x: px, y: py),
-                                                  size: icon.size)
-                            }
+                            bufferIndex += 1
                         }
-
-                        bufferIndex += vals?.count ?? 1
                     }
                 }
             }

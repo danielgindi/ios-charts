@@ -27,6 +27,10 @@ class PositiveNegativeBarChartViewController: DemoBaseViewController {
         // Do any additional setup after loading the view.
         self.title = "Positive/Negative Bar Chart"
         self.options = [.toggleValues,
+                        .toggleValuesPosition,
+                        .toggleValuesSideFlexible,
+                        .toggleValueColorsAdjustment,
+                        .toggleValueColorsSecondary,
                         .toggleHighlight,
                         .animateX,
                         .animateY,
@@ -98,6 +102,7 @@ class PositiveNegativeBarChartViewController: DemoBaseViewController {
         let set = BarChartDataSet(entries: yVals, label: "Values")
         set.colors = colors
         set.valueColors = colors
+        set.valueColorsAdjustment = chartView.valueColorsAdjustment
         
         let data = BarChartData(dataSet: set)
         data.setValueFont(.systemFont(ofSize: 13))

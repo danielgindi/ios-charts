@@ -175,6 +175,12 @@ public protocol ChartDataSetProtocol
     /// List representing all colors that are used for drawing the actual values for this DataSet
     var valueColors: [NSUIColor] { get }
     
+    /// valueColors in case of soft positions in effect (BarCharView:isDrawValueSideFlexible)
+    var valueColorsSecondary: [NSUIColor] { get }
+
+    /// Check if colors for the values for the DataSet are distinct from the background/bar color and apply inverted color if opposite
+    var valueColorsAdjustment: Bool { get set }
+
     /// All the colors that are used for this DataSet.
     /// Colors are reused as soon as the number of Entries the DataSet represents is higher than the size of the colors array.
     var colors: [NSUIColor] { get }
@@ -205,6 +211,17 @@ public protocol ChartDataSetProtocol
     
     /// - Returns: The color at the specified index that is used for drawing the values inside the chart. Uses modulus internally.
     func valueTextColorAt(_ index: Int) -> NSUIColor
+
+    /// Sets/get a single secondary color for value text.
+    /// Setting the color clears the valueColorsSecondary array and adds a single color.
+    /// Getting will return the first color in the valueColorsSecondary array.
+    /// If the array is empty - return value of valueTextColor
+    var valueTextColorSecondary: NSUIColor { get set }
+
+    /// - Returns: The secondary color at the specified index that is used for drawing the values inside the chart. Uses modulus internally. If empty - return values from the valueTextColorAt
+    func valueTextColorSecondaryAt(_ index: Int) -> NSUIColor
+
+    func resetValueSecondaryColors()
     
     /// the font for the value-text labels
     var valueFont: NSUIFont { get set }

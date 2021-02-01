@@ -29,6 +29,10 @@ class BarChartViewController: DemoBaseViewController {
         self.title = "Bar Chart"
         
         self.options = [.toggleValues,
+                        .toggleValuesPosition,
+                        .toggleValuesSideFlexible,
+                        .toggleValueColorsAdjustment,
+                        .toggleValueColorsSecondary,
                         .toggleHighlight,
                         .animateX,
                         .animateY,
@@ -134,6 +138,7 @@ class BarChartViewController: DemoBaseViewController {
             set1.colors = ChartColorTemplates.material()
             set1.drawValuesEnabled = false
             
+            set1.valueColorsAdjustment = chartView.valueColorsAdjustment
             let data = BarChartData(dataSet: set1)
             data.setValueFont(UIFont(name: "HelveticaNeue-Light", size: 10)!)
             data.barWidth = 0.9

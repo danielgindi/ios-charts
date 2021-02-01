@@ -192,6 +192,12 @@ open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
     /// List representing all colors that are used for drawing the actual values for this DataSet
     open var valueColors = [NSUIColor]()
 
+    /// valueColors in case of soft positions in effect (BarCharView:isDrawValueSideFlexible)
+    open var valueColorsSecondary = [NSUIColor]()
+
+    /// Check if colors for the values for the DataSet are distinct from the background/bar color and apply inverted color if opposite
+    open var valueColorsAdjustment: Bool = false
+
     /// The label string that describes the DataSet.
     open var label: String? = "DataSet"
     
@@ -302,6 +308,39 @@ open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
         return valueColors[index % valueColors.count]
     }
     
+    open var valueTextColorSecondary: NSUIColor
+        {
+        get
+        {
+            return valueTextColorSecondaryAt(0)
+        }
+        set
+        {
+            valueColorsSecondary.removeAll(keepingCapacity: false)
+            valueColorsSecondary.append(newValue)
+        }
+    }
+
+    open func resetValueSecondaryColors()
+    {
+        valueColorsSecondary.removeAll(keepingCapacity: false)
+    }
+
+    /// - Returns: The secondary color at the specified index that is used for drawing the values inside the chart. Uses modulus internally.
+    open func valueTextColorSecondaryAt(_ index: Int) -> NSUIColor
+    {
+        var index = index
+        if index < 0
+        {
+            index = 0
+        }
+        if valueColorsSecondary.isEmpty
+        {
+            return valueTextColorAt(index)
+        }
+        return valueColorsSecondary[index % valueColorsSecondary.count]
+    }
+
     /// the font for the value-text labels
     open var valueFont: NSUIFont = NSUIFont.systemFont(ofSize: 7.0)
     
@@ -393,6 +432,8 @@ open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
         
         copy.colors = colors
         copy.valueColors = valueColors
+        copy.valueColorsAdjustment = valueColorsAdjustment
+        copy.valueColorsSecondary = valueColorsSecondary
         copy.label = label
         copy.axisDependency = axisDependency
         copy.highlightEnabled = highlightEnabled

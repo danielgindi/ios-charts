@@ -33,6 +33,10 @@
     
     self.options = @[
                      @{@"key": @"toggleValues", @"label": @"Toggle Values"},
+                     @{@"key": @"toggleValuesPosition", @"label": @"Toggle Values Position"},
+                     @{@"key": @"toggleValuesSideFlexible", @"label": @"Toggle Y-Values Flexible Side"},
+                     @{@"key": @"toggleValueColorsAdjustment", @"label": @"Toggle Y-Values Color Adjustment"},
+                     @{@"key": @"toggleValueColorsSecondary", @"label": @"Toggle Y-Values Secondary Color"},
                      @{@"key": @"toggleIcons", @"label": @"Toggle Icons"},
                      @{@"key": @"toggleHighlight", @"label": @"Toggle Highlight"},
                      @{@"key": @"animateX", @"label": @"Animate X"},

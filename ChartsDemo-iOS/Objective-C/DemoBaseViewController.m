@@ -153,6 +153,55 @@
         
         [chartView setNeedsDisplay];
     }
+
+    if ([key isEqualToString:@"toggleValuesPosition"])
+    {
+        BarChartView *barChart = (BarChartView *)chartView;
+        barChart.drawValueAboveBarEnabled = !barChart.drawValueAboveBarEnabled;
+        
+        [chartView notifyDataSetChanged];
+    }
+
+    if ([key isEqualToString:@"toggleValuesSideFlexible"])
+    {
+        BarChartView *barChart = (BarChartView *)chartView;
+        barChart.isDrawValueSideFlexible = !barChart.isDrawValueSideFlexible;
+
+        [chartView notifyDataSetChanged];
+    }
+
+    if ([key isEqualToString:@"toggleValueColorsAdjustment"])
+    {
+        for (id<BarChartDataSetProtocol, NSObject> set in chartView.data.dataSets)
+        {
+            if ([set conformsToProtocol:@protocol(BarChartDataSetProtocol)])
+            {
+                set.valueColorsAdjustment = !set.valueColorsAdjustment;
+            }
+        }
+
+        [chartView setNeedsDisplay];
+    }
+
+    if ([key isEqualToString:@"toggleValueColorsSecondary"])
+    {
+        for (id<BarChartDataSetProtocol, NSObject> set in chartView.data.dataSets)
+        {
+            if ([set conformsToProtocol:@protocol(BarChartDataSetProtocol)])
+            {
+                if (set.valueColorsSecondary.count == 0)
+                {
+                    set.valueTextColorSecondary = [UIColor blackColor];
+                }
+                else
+                {
+                    [set resetValueSecondaryColors];
+                }
+            }
+        }
+
+        [chartView setNeedsDisplay];
+    }
 }
 
 #pragma mark - Actions

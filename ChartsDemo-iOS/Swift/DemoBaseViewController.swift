@@ -50,6 +50,11 @@ enum Option {
     case toggleYLabels
     case toggleRotate
     case toggleHighlightCircle
+	// Bar Chart
+    case toggleValuesPosition
+	case toggleValuesSideFlexible
+    case toggleValueColorsAdjustment
+    case toggleValueColorsSecondary
     
     var label: String {
         switch self {
@@ -91,6 +96,11 @@ enum Option {
         case .toggleYLabels: return "Toggle Y-Labels"
         case .toggleRotate: return "Toggle Rotate"
         case .toggleHighlightCircle: return "Toggle highlight circle"
+		//Bar Chart
+        case .toggleValuesPosition: return "Toggle Y-Values Position"
+		case .toggleValuesSideFlexible: return "Toggle Y-Values Flexible Side"
+        case .toggleValueColorsAdjustment: return "Toggle Y-Values Color Adjustment"
+        case .toggleValueColorsSecondary: return "Toggle Y-Values Secondary Color"
         }
     }
 }
@@ -175,6 +185,33 @@ class DemoBaseViewController: UIViewController, ChartViewDelegate {
                 }
             }
             chartView.setNeedsDisplay()
+
+        case .toggleValuesPosition:
+            let barChart = chartView as! BarChartView
+            barChart.drawValueAboveBarEnabled = !barChart.drawValueAboveBarEnabled
+            chartView.notifyDataSetChanged()
+
+        case .toggleValuesSideFlexible:
+            let barChart = chartView as! BarChartView
+            barChart.isDrawValueSideFlexible = !barChart.isDrawValueSideFlexible
+            chartView.notifyDataSetChanged()
+
+        case .toggleValueColorsAdjustment:
+            for set in chartView.data!.dataSets {
+                set.valueColorsAdjustment = !set.valueColorsAdjustment
+            }
+            chartView.setNeedsDisplay()
+
+        case .toggleValueColorsSecondary:
+            for set in chartView.data!.dataSets {
+                if set.valueColorsSecondary.isEmpty {
+                    set.valueTextColorSecondary = .black
+                } else {
+                    set.resetValueSecondaryColors()
+                }
+            }
+            chartView.setNeedsDisplay()
+
         default:
             break
         }

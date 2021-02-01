@@ -169,6 +169,18 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider
         set { (renderer as! CombinedChartRenderer).drawValueAboveBarEnabled = newValue }
     }
     
+    @objc open var isDrawValueSideFlexible: Bool
+        {
+        get { return (renderer as! CombinedChartRenderer).isDrawValueSideFlexible }
+        set { (renderer as! CombinedChartRenderer).isDrawValueSideFlexible = newValue }
+    }
+
+    @objc open var valuesOffset: CGFloat
+        {
+        get { return (renderer as! CombinedChartRenderer).valuesOffset }
+        set { (renderer as! CombinedChartRenderer).valuesOffset = newValue }
+    }
+
     /// if set to true, a grey area is drawn behind each bar that indicates the maximum value
     @objc open var drawBarShadowEnabled: Bool
     {

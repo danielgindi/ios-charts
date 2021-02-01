@@ -70,6 +70,19 @@ class BarChartTests: FBSnapshotTestCase
         return entries
     }
 
+    func setupStackedValuesWithSinglesDataEntries() -> [ChartDataEntry]
+    {
+        var entries: [ChartDataEntry] = Array()
+        entries.append(BarChartDataEntry(x: 0, yValues: [28, 50, 60, 30, 42], icon: UIImage(named: "icon")))
+        entries.append(BarChartDataEntry(x: 1, yValues: [-20, -36, -52, -40, -15], icon: UIImage(named: "icon")))
+        entries.append(BarChartDataEntry(x: 2, yValues: [10, 30, 40, 90, 72], icon: UIImage(named: "icon")))
+        entries.append(BarChartDataEntry(x: 3, yValues: [-40, -50, -30, -60, -20], icon: UIImage(named: "icon")))
+        entries.append(BarChartDataEntry(x: 4, yValues: [10, 40, 60, 45, 62], icon: UIImage(named: "icon")))
+        entries.append(BarChartDataEntry(x: 5, yValues: [10.0], icon: UIImage(named: "icon")))
+        entries.append(BarChartDataEntry(x: 6, yValues: [-30.0], icon: UIImage(named: "icon")))
+        return entries
+    }
+
     func setupDefaultStackedDataSet(chartDataEntries: [ChartDataEntry]) -> BarChartDataSet
     {
         let dataSet = BarChartDataSet(entries: chartDataEntries, label: "Stacked bar chart unit test data")
@@ -190,6 +203,16 @@ class BarChartTests: FBSnapshotTestCase
         ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
     }
 
+
+    func testPositiveValuesCustomOffset()
+    {
+        let dataEntries = setupPositiveValuesDataEntries()
+        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.valuesOffset = 20
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
     func testNegativeValues()
     {
         let dataEntries = setupNegativeValuesDataEntries()
@@ -251,6 +274,41 @@ class BarChartTests: FBSnapshotTestCase
         ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
     }
 
+    func testNegativeValuesCustomOffset()
+    {
+        let dataEntries = setupNegativeValuesDataEntries()
+        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.valuesOffset = 20
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testNegativeValuesFlexibleSecondaryColor()
+    {
+        let dataEntries = setupNegativeValuesDataEntries()
+        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        dataSet.valueTextColorSecondary = .red
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.drawValueAboveBarEnabled = true
+        chart.isDrawValueSideFlexible = true
+        chart.valuesOffset = 20
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testNotDrawValueAboveBarsNegativeValuesFlexibleSecondaryColor()
+    {
+        let dataEntries = setupNegativeValuesDataEntries()
+        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        dataSet.valueTextColorSecondary = .red
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.drawValueAboveBarEnabled = false
+        chart.isDrawValueSideFlexible = true
+        chart.valuesOffset = 20
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
     func testHidesValues()
     {
         let dataEntries = setupDefaultValuesDataEntries()
@@ -271,11 +329,85 @@ class BarChartTests: FBSnapshotTestCase
         ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
     }
 
+    func testDefaultNotDrawValueAboveBarsFlexible()
+    {
+        let dataEntries = setupDefaultValuesDataEntries()
+        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.drawValueAboveBarEnabled = false
+        chart.isDrawValueSideFlexible = true
+        chart.valuesOffset = 20
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testDefaultNotDrawValueAboveBarsFlexibleInvertColor()
+    {
+        let dataEntries = setupDefaultValuesDataEntries()
+        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        dataSet.valueTextColor = dataSet.color(atIndex: 0)
+        dataSet.valueColorsAdjustment = true
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.drawValueAboveBarEnabled = false
+        chart.isDrawValueSideFlexible = true
+        chart.valuesOffset = 20
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testDefaultValuesFlexibleSecondaryColor()
+    {
+        let dataEntries = setupDefaultValuesDataEntries()
+        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        dataSet.valueTextColorSecondary = .red
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.isDrawValueSideFlexible = true
+        chart.valuesOffset = 20
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testDefaultNotDrawValueAboveBarsFlexibleSecondaryColor()
+    {
+        let dataEntries = setupDefaultValuesDataEntries()
+        let dataSet = setupDefaultDataSet(chartDataEntries: dataEntries)
+        dataSet.valueTextColorSecondary = .red
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.drawValueAboveBarEnabled = false
+        chart.isDrawValueSideFlexible = true
+        chart.valuesOffset = 20
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
     func testStackedDrawValues()
     {
         let dataEntries = setupStackedValuesDataEntries()
         let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
         let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedDrawValuesInvertColors()
+    {
+        let dataEntries = setupStackedValuesDataEntries()
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        dataSet.valueColors = dataSet.colors
+        dataSet.valueColorsAdjustment = true
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedDrawValuesFlexibleInvertColors()
+    {
+        let dataEntries = setupStackedValuesDataEntries()
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        dataSet.valueColors = dataSet.colors
+        dataSet.valueColorsAdjustment = true
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.isDrawValueSideFlexible = true
         chart.notifyDataSetChanged()
         ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
     }
@@ -295,6 +427,112 @@ class BarChartTests: FBSnapshotTestCase
         let dataEntries = setupStackedValuesDataEntries()
         let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
         let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.drawValueAboveBarEnabled = false
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndRegularPositiveDrawValues()
+    {
+        var dataEntries = setupStackedValuesDataEntries()
+        dataEntries.append(BarChartDataEntry(x: 5, y: 10, icon: UIImage(named: "icon")))
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndRegularNegativeDrawValues()
+    {
+        var dataEntries = setupStackedValuesDataEntries()
+        dataEntries.append(BarChartDataEntry(x: 5, y: -10, icon: UIImage(named: "icon")))
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndStackSinglePositiveDrawValues()
+    {
+        var dataEntries = setupStackedValuesDataEntries()
+        dataEntries.append(BarChartDataEntry(x: 5, yValues: [10.0], icon: UIImage(named: "icon")))
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndStackSingleNegativeDrawValues()
+    {
+        var dataEntries = setupStackedValuesDataEntries()
+        dataEntries.append(BarChartDataEntry(x: 5, yValues: [-10.0], icon: UIImage(named: "icon")))
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndStackSinglesDrawValuesFlexible()
+    {
+        let dataEntries = setupStackedValuesWithSinglesDataEntries()
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.isDrawValueSideFlexible = true
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndRegularsDrawValuesFlexible()
+    {
+        let dataEntries = setupStackedValuesWithSinglesDataEntries()
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.isDrawValueSideFlexible = true
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndRegularsNotDrawValueAboveBarsFlexible()
+    {
+        let dataEntries = setupStackedValuesWithSinglesDataEntries()
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.isDrawValueSideFlexible = true
+        chart.drawValueAboveBarEnabled = false
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndStackSinglesNotDrawValueAboveBarsFlexible()
+    {
+        let dataEntries = setupStackedValuesWithSinglesDataEntries()
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.isDrawValueSideFlexible = true
+        chart.drawValueAboveBarEnabled = false
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndStackSinglesDrawValueInvertColors()
+    {
+        let dataEntries = setupStackedValuesWithSinglesDataEntries()
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        dataSet.valueColors = dataSet.colors
+        dataSet.valueColorsAdjustment = true
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.notifyDataSetChanged()
+        ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
+    }
+
+    func testStackedAndStackSinglesNotDrawValueAboveBarsFlexibleInvertColors()
+    {
+        let dataEntries = setupStackedValuesWithSinglesDataEntries()
+        let dataSet = setupDefaultStackedDataSet(chartDataEntries: dataEntries)
+        dataSet.valueColors = dataSet.colors
+        dataSet.valueColorsAdjustment = true
+        let chart = setupDefaultChart(dataSets: [dataSet])
+        chart.isDrawValueSideFlexible = true
         chart.drawValueAboveBarEnabled = false
         chart.notifyDataSetChanged()
         ChartsSnapshotVerifyView(chart, identifier: Snapshot.identifier(UIScreen.main.bounds.size), overallTolerance: Snapshot.tolerance)
