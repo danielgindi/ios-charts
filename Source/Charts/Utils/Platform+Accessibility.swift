@@ -56,13 +56,13 @@ open class NSUIAccessibilityElement: UIAccessibilityElement
     {
         get
         {
-            return super.accessibilityFrame
+            let frame = super.accessibilityFrame
+            return containerView?.convert(frame, to: UIScreen.main.coordinateSpace) ?? frame
         }
 
         set
         {
-            guard let containerView = containerView else { return }
-            super.accessibilityFrame = containerView.convert(newValue, to: UIScreen.main.coordinateSpace)
+            super.accessibilityFrame = newValue
         }
     }
 }
