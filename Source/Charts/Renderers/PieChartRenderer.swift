@@ -563,9 +563,9 @@ open class PieChartRenderer: NSObject, DataRenderer
                 if let icon = e.icon, dataSet.isDrawIconsEnabled
                 {
                     // calculate the icon's position
-
-                    let x = (labelRadius + iconsOffset.y) * sliceXBase + center.x
-                    var y = (labelRadius + iconsOffset.y) * sliceYBase + center.y
+                    let r = dataSet.iconsPosition == .iconCenterInTheMiddleOfSlice ? labelRadius : radius
+                    let x = (r + iconsOffset.y) * sliceXBase + center.x
+                    var y = (r + iconsOffset.y) * sliceYBase + center.y
                     y += iconsOffset.x
                     
                     context.drawImage(icon,

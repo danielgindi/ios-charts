@@ -31,6 +31,9 @@ public protocol PieChartDataSetProtocol: ChartDataSetProtocol
     var xValuePosition: PieChartDataSet.ValuePosition { get set }
     var yValuePosition: PieChartDataSet.ValuePosition { get set }
 
+    /// relative icons position
+    var iconsPosition: PieChartDataSet.IconsPosition { get set }
+
     /// When valuePosition is OutsideSlice, indicates line color
     var valueLineColor: NSUIColor? { get set }
 

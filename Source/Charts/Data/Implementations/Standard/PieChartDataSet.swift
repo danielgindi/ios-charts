@@ -21,6 +21,13 @@ open class PieChartDataSet: ChartDataSet, PieChartDataSetProtocol
         case outsideSlice
     }
 
+    @objc(PieChartIconsPosition)
+    public enum IconsPosition: Int
+    {
+        case iconCenterOnOuterSliceRim
+        case iconCenterInTheMiddleOfSlice
+    }
+
     private func initialize()
     {
         self.valueTextColor = NSUIColor.white
@@ -75,6 +82,9 @@ open class PieChartDataSet: ChartDataSet, PieChartDataSetProtocol
 
     open var xValuePosition: ValuePosition = .insideSlice
     open var yValuePosition: ValuePosition = .insideSlice
+    
+    /// relative icons position
+    open var iconsPosition: IconsPosition = .iconCenterInTheMiddleOfSlice
 
     /// When valuePosition is OutsideSlice, indicates line color
     open var valueLineColor: NSUIColor? = NSUIColor.black
