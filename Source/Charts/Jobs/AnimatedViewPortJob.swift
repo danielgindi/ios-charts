@@ -15,9 +15,9 @@ import QuartzCore
 
 open class AnimatedViewPortJob: ViewPortJob
 {
-    internal var phase: CGFloat = 1.0
-    internal var xOrigin: CGFloat = 0.0
-    internal var yOrigin: CGFloat = 0.0
+    public var phase: CGFloat = 1.0
+    public var xOrigin: CGFloat = 0.0
+    public var yOrigin: CGFloat = 0.0
     
     private var _startTime: TimeInterval = 0.0
     private var _displayLink: NSUIDisplayLink!
@@ -115,12 +115,12 @@ open class AnimatedViewPortJob: ViewPortJob
         }
     }
     
-    internal func animationUpdate()
+    open func animationUpdate()
     {
        // Override this
     }
     
-    internal func animationEnd()
+    open func animationEnd()
     {
         // Override this
     }

@@ -14,7 +14,7 @@ import CoreGraphics
 
 open class AnimatedMoveViewJob: AnimatedViewPortJob
 {
-    internal override func animationUpdate()
+    open override func animationUpdate()
     {
         var pt = CGPoint(
             x: xOrigin + (CGFloat(xValue) - xOrigin) * phase,
