@@ -59,6 +59,9 @@ In order to correctly compile:
 * [Creating a Radar Chart in Swift (David Piper)](https://medium.com/@HeyDaveTheDev/creating-a-radar-chart-in-swift-5791afcf92f0)
 * [Plotting in IOS using Charts framework with SwiftUI (Evgeny Basisty)](https://medium.com/@zzzzbh/plotting-in-ios-using-charts-framework-with-swiftui-222034a2bea6)
 
+#### Charts Used Projects (Examples)
+* [Pie Chart implementation in a SwiftUI App (Expenso-iOS)](https://github.com/sameersyd/Expenso-iOS)
+
 Want your tutorial to show here? Create a PR!
 
 ## Troubleshooting
