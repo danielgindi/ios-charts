@@ -168,9 +168,9 @@
         set1.formSize = 15.0;
         
         NSArray *gradientColors = @[
-                                    (id)[ChartColorTemplates colorFromString:@"#00ff0000"].CGColor,
-                                    (id)[ChartColorTemplates colorFromString:@"#ffff0000"].CGColor
-                                    ];
+            (id)[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.0].CGColor,
+            (id)[UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0].CGColor
+        ];
         CGGradientRef gradient = CGGradientCreateWithColors(nil, (CFArrayRef)gradientColors, nil);
         
         set1.fillAlpha = 1.f;

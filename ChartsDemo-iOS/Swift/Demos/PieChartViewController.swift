@@ -85,12 +85,13 @@ class PieChartViewController: DemoBaseViewController {
         set.sliceSpace = 2
         
         
-        set.colors = ChartColorTemplates.vordiplom()
-            + ChartColorTemplates.joyful()
-            + ChartColorTemplates.colorful()
-            + ChartColorTemplates.liberty()
-            + ChartColorTemplates.pastel()
+        let colors = ChartColorTemplates.vordiplom
+            + ChartColorTemplates.joyful
+            + ChartColorTemplates.colorful
+            + ChartColorTemplates.liberty
+            + ChartColorTemplates.pastel
             + [UIColor(red: 51/255, green: 181/255, blue: 229/255, alpha: 1)]
+        set.colors = colors
         
         let data = PieChartData(dataSet: set)
         

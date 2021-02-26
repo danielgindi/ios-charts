@@ -27,13 +27,13 @@ class PieChartTests: XCTestCase {
         dataSet.drawIconsEnabled = false
         dataSet.iconsOffset = CGPoint(x: 0, y: 20.0)
 
-        dataSet.colors = ChartColorTemplates.vordiplom()
-            + ChartColorTemplates.joyful()
-            + ChartColorTemplates.colorful()
-            + ChartColorTemplates.liberty()
-            + ChartColorTemplates.pastel()
-            + [UIColor(red: 51 / 255, green: 181 / 255, blue: 229 / 255, alpha: 1)]
-
+        let colors = ChartColorTemplates.vordiplom
+            + ChartColorTemplates.joyful
+            + ChartColorTemplates.colorful
+            + ChartColorTemplates.liberty
+            + ChartColorTemplates.pastel
+            + [UIColor(red: 51/255, green: 181/255, blue: 229/255, alpha: 1)]
+        dataSet.colors = colors
         
         chart = PieChartView(frame: CGRect(x: 0, y: 0, width: 480, height: 350))
         chart.backgroundColor = NSUIColor.clear

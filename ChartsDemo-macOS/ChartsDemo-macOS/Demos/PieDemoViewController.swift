@@ -28,7 +28,7 @@ open class PieDemoViewController: NSViewController
         let data = PieChartData()
         let ds1 = PieChartDataSet(entries: yse1, label: "Hello")
         
-        ds1.colors = ChartColorTemplates.vordiplom()
+        ds1.colors = ChartColorTemplates.vordiplom
         
         data.append(ds1)
         

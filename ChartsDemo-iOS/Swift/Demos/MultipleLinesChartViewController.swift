@@ -72,7 +72,7 @@ class MultipleLinesChartViewController: DemoBaseViewController {
     
     // TODO: Refine data creation
     func setDataCount(_ count: Int, range: UInt32) {
-        let colors = ChartColorTemplates.vordiplom()[0...2]
+        let colors = ChartColorTemplates.vordiplom[0...2]
         
         let block: (Int) -> ChartDataEntry = { (i) -> ChartDataEntry in
             let val = Double(arc4random_uniform(range) + 3)
@@ -92,8 +92,8 @@ class MultipleLinesChartViewController: DemoBaseViewController {
         }
         
         dataSets[0].lineDashLengths = [5, 5]
-        dataSets[0].colors = ChartColorTemplates.vordiplom()
-        dataSets[0].circleColors = ChartColorTemplates.vordiplom()
+        dataSets[0].colors = ChartColorTemplates.vordiplom
+        dataSets[0].circleColors = ChartColorTemplates.vordiplom
         
         let data = LineChartData(dataSets: dataSets)
         data.setValueFont(.systemFont(ofSize: 7, weight: .light))

@@ -191,7 +191,7 @@ class CombinedChartViewController: DemoBaseViewController {
         }
         
         let set = ScatterChartDataSet(entries: entries, label: "Scatter DataSet")
-        set.colors = ChartColorTemplates.material()
+        set.colors = ChartColorTemplates.material
         set.scatterShapeSize = 4.5
         set.drawValuesEnabled = false
         set.valueFont = .systemFont(ofSize: 10)
@@ -222,7 +222,7 @@ class CombinedChartViewController: DemoBaseViewController {
         }
         
         let set = BubbleChartDataSet(entries: entries, label: "Bubble DataSet")
-        set.setColors(ChartColorTemplates.vordiplom(), alpha: 1)
+        set.setColors(ChartColorTemplates.vordiplom, alpha: 1)
         set.valueTextColor = .white
         set.valueFont = .systemFont(ofSize: 10)
         set.drawValuesEnabled = true

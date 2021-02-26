@@ -85,7 +85,7 @@ class HalfPieChartViewController: DemoBaseViewController {
         let set = PieChartDataSet(entries: entries, label: "Election Results")
         set.sliceSpace = 3
         set.selectionShift = 5
-        set.colors = ChartColorTemplates.material()
+        set.colors = ChartColorTemplates.material
         
         let data = PieChartData(dataSet: set)
         

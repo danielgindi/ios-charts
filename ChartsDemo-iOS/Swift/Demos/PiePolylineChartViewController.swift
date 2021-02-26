@@ -68,14 +68,14 @@ class PiePolylineChartViewController: DemoBaseViewController {
         
         let set = PieChartDataSet(entries: entries, label: "Election Results")
         set.sliceSpace = 2
-        
-        
-        set.colors = ChartColorTemplates.vordiplom()
-            + ChartColorTemplates.joyful()
-            + ChartColorTemplates.colorful()
-            + ChartColorTemplates.liberty()
-            + ChartColorTemplates.pastel()
+
+        let colors = ChartColorTemplates.vordiplom
+            + ChartColorTemplates.joyful
+            + ChartColorTemplates.colorful
+            + ChartColorTemplates.liberty
+            + ChartColorTemplates.pastel
             + [UIColor(red: 51/255, green: 181/255, blue: 229/255, alpha: 1)]
+        set.colors = colors
         
         set.valueLinePart1OffsetPercentage = 0.8
         set.valueLinePart1Length = 0.2
