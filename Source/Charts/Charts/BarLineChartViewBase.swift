@@ -36,6 +36,18 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     private var _scaleXEnabled = true
     private var _scaleYEnabled = true
     
+    @objc open var isDragging: Bool {
+        return _isDragging
+    }
+    
+    @objc open var isDecelerating: Bool {
+        return _decelerationDisplayLink != nil
+    }
+    
+    @objc open var isScaling: Bool {
+        return _isScaling
+    }
+    
     /// the color for the background of the chart-drawing area (everything behind the grid lines).
     @objc open var gridBackgroundColor = NSUIColor(red: 240/255.0, green: 240/255.0, blue: 240/255.0, alpha: 1.0)
     
