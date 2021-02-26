@@ -129,8 +129,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
                 height: shapeSize
             )
 
-            context.setFillColor(color.cgColor)
-            context.fillEllipse(in: rect)
+            renderFill(with: color, for: rect, in: context, dataSet: dataSet, dataEntry: entry)
 
             // Create and append the corresponding accessibility element to accessibilityOrderedElements
             if let chart = dataProvider as? BubbleChartView
@@ -305,9 +304,13 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
                 width: shapeSize,
                 height: shapeSize)
             
-            context.setLineWidth(dataSet.highlightCircleWidth)
-            context.setStrokeColor(color.cgColor)
-            context.strokeEllipse(in: rect)
+            render(highlight: high,
+                   with: color,
+                   for: rect,
+                   lineWidth: dataSet.highlightCircleWidth,
+                   in: context,
+                   dataSet: dataSet,
+                   entry: entry)
             
             high.setDraw(x: _pointBuffer.x, y: _pointBuffer.y)
         }
@@ -356,5 +359,51 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
         modifier(element)
 
         return element
+    }
+    
+    // MARK: - Rendering override points -
+
+    /// Render bubble fill.
+    ///
+    /// - Parameters:
+    ///   - color: the fill color of the bubble.
+    ///   - rect: the rectangle for which to render the bubble.
+    ///   - context: the drawing context.
+    ///   - dataSet: the dataset that is being rendered.
+    ///   - dataEntry: the entry that is being rendered.
+    @objc open func renderFill(with color: NSUIColor,
+                               for rect: CGRect,
+                               in context: CGContext,
+                               dataSet: BubbleChartDataSetProtocol,
+                               dataEntry: BubbleChartDataEntry) {
+        context.saveGState()
+        context.setFillColor(color.cgColor)
+        context.fillEllipse(in: rect)
+        context.restoreGState()
+    }
+    
+    
+    /// Render a highlighted bubble.
+    ///
+    /// - Parameters:
+    ///   - highlight: the hightligh to render.
+    ///   - color: the color of the highlighted bubble.
+    ///   - rect: the rectangle for which to render the bubble.
+    ///   - lineWidth: the width of the border.
+    ///   - context: the drawing context.
+    ///   - dataSet: the dataset dat is being rendered.
+    ///   - entry: the entry that is being rendered.
+    @objc open func render(highlight: Highlight,
+                           with color: NSUIColor,
+                           for rect: CGRect,
+                           lineWidth: CGFloat,
+                           in context: CGContext,
+                           dataSet: BubbleChartDataSetProtocol,
+                           entry: BubbleChartDataEntry) {
+        context.saveGState()
+        context.setLineWidth(lineWidth)
+        context.setStrokeColor(color.cgColor)
+        context.strokeEllipse(in: rect)
+        context.restoreGState()
     }
 }

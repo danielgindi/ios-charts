@@ -139,6 +139,7 @@ open class PieChartRenderer: NSObject, DataRenderer
         let sliceSpace = visibleAngleCount <= 1 ? 0.0 : getSliceSpace(dataSet: dataSet)
 
         context.saveGState()
+        defer { context.restoreGState() }
 
         // Make the chart header the first element in the accessible elements array
         // We can do this in drawDataSet, since we know PieChartView can have only 1 dataSet
@@ -181,9 +182,6 @@ open class PieChartRenderer: NSObject, DataRenderer
             }
         
             let accountForSliceSpacing = sliceSpace > 0.0 && sliceAngle <= 180.0
-
-            context.setFillColor(dataSet.color(atIndex: j).cgColor)
-
             let sliceSpaceAngleOuter = visibleAngleCount == 1 ?
                 0.0 :
                 sliceSpace / radius.DEG2RAD
@@ -274,9 +272,7 @@ open class PieChartRenderer: NSObject, DataRenderer
 
             path.closeSubpath()
 
-            context.beginPath()
-            context.addPath(path)
-            context.fillPath(using: .evenOdd)
+            renderFill(with: dataSet.color(atIndex: j), for: path, in: context, dataSet: dataSet, entry: e)
 
             let axElement = createAccessibleElement(withIndex: j,
                                                     container: chart,
@@ -290,8 +286,6 @@ open class PieChartRenderer: NSObject, DataRenderer
 
         // Post this notification to let VoiceOver account for the redrawn frames
         accessibilityPostLayoutChangedNotification()
-
-        context.restoreGState()
     }
     
     open func drawValues(context: CGContext)
@@ -705,6 +699,7 @@ open class PieChartRenderer: NSObject, DataRenderer
             else { return }
 
         context.saveGState()
+        defer { context.restoreGState() }
 
         let phaseX = animator.phaseX
         let phaseY = animator.phaseY
@@ -722,12 +717,12 @@ open class PieChartRenderer: NSObject, DataRenderer
         // Append highlighted accessibility slices into this array, so we can prioritize them over unselected slices
         var highlightedAccessibleElements: [NSUIAccessibilityElement] = []
 
-        for hightlight in highlights
+        for (highlightIndex, highlight) in highlights.enumerated()
         {
             // get the index to highlight
-            let index = Int(hightlight.x)
+            let index = Int(highlight.x)
             guard index < drawAngles.count,
-                  let set = data[hightlight.dataSetIndex] as? PieChartDataSetProtocol,
+                  let set = data[highlight.dataSetIndex] as? PieChartDataSetProtocol,
                   set.isHighlightEnabled
             else
             {
@@ -763,8 +758,6 @@ open class PieChartRenderer: NSObject, DataRenderer
             let highlightedRadius = radius + shift
 
             let accountForSliceSpacing = sliceSpace > 0.0 && sliceAngle <= 180.0
-
-            context.setFillColor(set.highlightColor?.cgColor ?? set.color(atIndex: index).cgColor)
 
             let sliceSpaceAngleOuter = visibleAngleCount == 1 ?
                 0.0 :
@@ -864,9 +857,12 @@ open class PieChartRenderer: NSObject, DataRenderer
 
             path.closeSubpath()
 
-            context.beginPath()
-            context.addPath(path)
-            context.fillPath(using: .evenOdd)
+            render(highlight: highlights[highlightIndex],
+                   with: set.highlightColor ?? set.color(atIndex: index),
+                   for: path,
+                   in: context,
+                   dataSet: set,
+                   entry: set.entryForIndex(index))
 
             let axElement = createAccessibleElement(withIndex: index,
                                                     container: chart,
@@ -884,8 +880,6 @@ open class PieChartRenderer: NSObject, DataRenderer
         if !accessibleChartElements.isEmpty {
             accessibleChartElements.insert(contentsOf: highlightedAccessibleElements, at: 1)
         }
-
-        context.restoreGState()
     }
 
     /// Creates an NSUIAccessibilityElement representing a slice of the PieChart.
@@ -933,5 +927,42 @@ open class PieChartRenderer: NSObject, DataRenderer
     
     public func createAccessibleHeader(usingChart chart: ChartViewBase, andData data: ChartData, withDefaultDescription defaultDescription: String) -> NSUIAccessibilityElement {
         return AccessibleHeader.create(usingChart: chart, andData: data, withDefaultDescription: defaultDescription)
+    }
+    
+    // MARK: - Rendering override points -
+    
+    /// Render the fill of a pie segment.
+    ///
+    /// - Parameters:
+    ///   - color: the fill color.
+    ///   - path: the path of pie segment.
+    ///   - context: the drawing context.
+    ///   - dataSet: the dataset that is being rendered.
+    ///   - entry: the data entry that is being filled.
+    @objc open func renderFill(with color: NSUIColor, for path: CGPath, in context: CGContext, dataSet: PieChartDataSetProtocol, entry: ChartDataEntry) {
+        context.saveGState()
+        context.beginPath()
+        context.addPath(path)
+        context.setFillColor(color.cgColor)
+        context.fillPath(using: .evenOdd)
+        context.restoreGState()
+    }
+    
+    /// Render the higlighted pie segment.
+    ///
+    /// - Parameters:
+    ///   - highlight: the highlight to render.
+    ///   - color: the highlight color.
+    ///   - path: the path of pie segment.
+    ///   - context: the drawing context.
+    ///   - dataSet: the dataset that is being rendered.
+    ///   - entry: the data entry that is being highlighted.
+    @objc open func render(highlight: Highlight, with color: NSUIColor, for path: CGPath, in context: CGContext, dataSet: PieChartDataSetProtocol, entry: ChartDataEntry?) {
+        context.saveGState()
+        context.beginPath()
+        context.addPath(path)
+        context.setFillColor(color.cgColor)
+        context.fillPath(using: .evenOdd)
+        context.restoreGState()
     }
 }

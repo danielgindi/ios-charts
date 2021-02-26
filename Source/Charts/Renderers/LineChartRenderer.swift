@@ -50,6 +50,7 @@ open class LineChartRenderer: LineRadarRenderer
         }
         
         context.saveGState()
+        defer { context.restoreGState() }
         
         context.setLineWidth(dataSet.lineWidth)
         if dataSet.lineDashLengths != nil
@@ -76,19 +77,6 @@ open class LineChartRenderer: LineRadarRenderer
         case .horizontalBezier:
             drawHorizontalBezier(context: context, dataSet: dataSet)
         }
-        
-        context.restoreGState()
-    }
-
-    private func drawLine(
-        context: CGContext,
-        spline: CGMutablePath,
-        drawingColor: NSUIColor)
-    {
-        context.beginPath()
-        context.addPath(spline)
-        context.setStrokeColor(drawingColor.cgColor)
-        context.strokePath()
     }
     
     @objc open func drawCubicBezier(context: CGContext, dataSet: LineChartDataSetProtocol)
@@ -182,7 +170,7 @@ open class LineChartRenderer: LineRadarRenderer
         }
         else
         {
-            drawLine(context: context, spline: cubicPath, drawingColor: drawingColor)
+            renderLine(with: cubicPath, color: drawingColor, in: context, dataSet: dataSet)
         }
     }
     
@@ -252,7 +240,7 @@ open class LineChartRenderer: LineRadarRenderer
         }
         else
         {
-            drawLine(context: context, spline: cubicPath, drawingColor: drawingColor)
+            renderLine(with: cubicPath, color: drawingColor, in: context, dataSet: dataSet)
         }
     }
     
@@ -384,9 +372,7 @@ open class LineChartRenderer: LineRadarRenderer
                     continue
                 }
                 
-                // get the color that is set for this line-segment
-                context.setStrokeColor(dataSet.color(atIndex: j).cgColor)
-                context.strokeLineSegments(between: _lineSegments)
+                renderLine(between: _lineSegments, color: dataSet.color(atIndex: j), in: context, dataSet: dataSet)
             }
         }
         else
@@ -442,10 +428,7 @@ open class LineChartRenderer: LineRadarRenderer
                 if dataSet.isDrawLineWithGradientEnabled {
                     drawGradientLine(context: context, dataSet: dataSet, spline: path, matrix: valueToPixelMatrix)
                 } else {
-                    context.beginPath()
-                    context.addPath(path)
-                    context.setStrokeColor(dataSet.color(atIndex: 0).cgColor)
-                    context.strokePath()
+                    renderLine(with: path, color: dataSet.color(atIndex: 0), in: context, dataSet: dataSet)
                 }
             }
         }
@@ -853,11 +836,7 @@ open class LineChartRenderer: LineRadarRenderer
         context.saveGState()
         defer { context.restoreGState() }
 
-        context.beginPath()
-        context.addPath(spline)
-        context.replacePathWithStrokedPath()
-        context.clip()
-        context.drawLinearGradient(gradient, start: gradientStart, end: gradientEnd, options: [])
+        renderGradientLine(with: spline, linearGradient: gradient, startingAt: gradientStart, endingAt: gradientEnd, in: context, dataSet: dataSet)
     }
     
     /// Creates a nested array of empty subarrays each of which will be populated with NSUIAccessibilityElements.
@@ -905,5 +884,61 @@ open class LineChartRenderer: LineRadarRenderer
         modifier(element)
 
         return element
+    }
+    
+    // MARK: - Rendering override points -
+    
+    /// Render a line.
+    ///
+    /// - Parameters:
+    ///   - path: the path that should be rendered.
+    ///   - color: the color of the line.
+    ///   - context: the drawing context.
+    ///   - dataSet: the dataset that is being rendered.
+    @objc open func renderLine(with path: CGPath, color: NSUIColor, in context: CGContext, dataSet: LineChartDataSetProtocol) {
+        context.saveGState()
+        context.beginPath()
+        context.addPath(path)
+        context.setStrokeColor(color.cgColor)
+        context.strokePath()
+        context.restoreGState()
+    }
+
+    /// Render a line with a gradient.
+    ///
+    /// - Parameters:
+    ///   - path: the path that should be rendered.
+    ///   - gradient: the gradient.
+    ///   - startPoint: the gradient's start point.
+    ///   - endPoint: the gradient's end point.
+    ///   - context: the drawing context.
+    ///   - dataSet: the dataset that is being rendered.
+    @objc open func renderGradientLine(with path: CGPath,
+                                       linearGradient gradient: CGGradient,
+                                       startingAt startPoint: CGPoint,
+                                       endingAt endPoint: CGPoint,
+                                       in context: CGContext,
+                                       dataSet: LineChartDataSetProtocol) {
+        context.saveGState()
+        context.beginPath()
+        context.addPath(path)
+        context.replacePathWithStrokedPath()
+        context.clip()
+        context.drawLinearGradient(gradient, start: startPoint, end: endPoint, options: [])
+        context.restoreGState()
+    }
+    
+    /// Render a line between points.
+    ///
+    /// - Parameters:
+    ///   - points: the collection of points to draw the line between.
+    ///   - color: the color of the line.
+    ///   - context: the drawing context.
+    ///   - dataSet: the dataset that is being rendered.
+    @objc open func renderLine(between points: [CGPoint], color: NSUIColor, in context: CGContext, dataSet: LineChartDataSetProtocol) {
+        context.saveGState()
+        context.setStrokeColor(color.cgColor)
+        context.strokeLineSegments(between: points)
+        context.restoreGState()
     }
 }
