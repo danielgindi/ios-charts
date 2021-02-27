@@ -518,6 +518,15 @@ open class LegendRenderer: NSObject, Renderer
             context.setFillColor(formColor.cgColor)
             context.fill(CGRect(x: x, y: y - formSize / 2.0, width: formSize, height: formSize))
             
+        case .roundRect:
+            
+            context.setFillColor(formColor.cgColor)
+            let path = CGMutablePath()
+            path.addRoundedRect(in: CGRect(x: x, y: y - formSize / 2.0, width: formSize, height: formSize), cornerWidth: formSize / 3, cornerHeight: formSize / 3)
+            context.addPath(path)
+            context.closePath()
+            context.fillPath()
+            
         case .line:
             
             let formLineWidth = entry.formLineWidth.isNaN ? legend.formLineWidth : entry.formLineWidth

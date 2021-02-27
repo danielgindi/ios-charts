@@ -30,6 +30,9 @@ open class Legend: ComponentBase
         /// Draw a square
         case square
         
+        /// Draw a roundRect
+        case roundRect
+        
         /// Draw a circle
         case circle
         
