@@ -37,22 +37,22 @@ extension NSUIView {
         self.nsuiTouchesCancelled(touches, withEvent: event)
     }
 
-    open func nsuiTouchesBegan(_ touches: Set<NSUITouch>, withEvent event: NSUIEvent?)
+    @objc open func nsuiTouchesBegan(_ touches: Set<NSUITouch>, withEvent event: NSUIEvent?)
     {
         super.touchesBegan(touches, with: event!)
     }
 
-    open func nsuiTouchesMoved(_ touches: Set<NSUITouch>, withEvent event: NSUIEvent?)
+    @objc open func nsuiTouchesMoved(_ touches: Set<NSUITouch>, withEvent event: NSUIEvent?)
     {
         super.touchesMoved(touches, with: event!)
     }
 
-    open func nsuiTouchesEnded(_ touches: Set<NSUITouch>, withEvent event: NSUIEvent?)
+    @objc open func nsuiTouchesEnded(_ touches: Set<NSUITouch>, withEvent event: NSUIEvent?)
     {
         super.touchesEnded(touches, with: event!)
     }
 
-    open func nsuiTouchesCancelled(_ touches: Set<NSUITouch>?, withEvent event: NSUIEvent?)
+    @objc open func nsuiTouchesCancelled(_ touches: Set<NSUITouch>?, withEvent event: NSUIEvent?)
     {
         super.touchesCancelled(touches!, with: event!)
     }
