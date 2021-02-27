@@ -783,7 +783,8 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
 
         guard let e = dataSet.entryForIndex(idx/stackSize) as? BarChartDataEntry else { return element }
         guard let dataProvider = dataProvider else { return element }
-
+        guard let data = container.data as? ChartData else { return element }
+        
         // NOTE: The formatter can cause issues when the x-axis labels are consecutive ints.
         // i.e. due to the Double conversion, if there are more than one data set that are grouped,
         // there is the possibility of some labels being rounded up. A floor() might fix this, but seems to be a brute force solution.
@@ -825,8 +826,9 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
 
         let dataSetCount = dataProvider.barData?.dataSetCount ?? -1
         let doesContainMultipleDataSets = dataSetCount > 1
-
-        element.accessibilityLabel = "\(doesContainMultipleDataSets ? (dataSet.label ?? "")  + ", " : "") \(label): \(elementValueText)"
+        let suffix = data.accessibilityEntryLabelSuffix ?? ""
+        
+        element.accessibilityLabel = "\(doesContainMultipleDataSets ? (dataSet.label ?? "")  + ", " : "") \(label): \(elementValueText) \(suffix)"
 
         modifier(element)
 
