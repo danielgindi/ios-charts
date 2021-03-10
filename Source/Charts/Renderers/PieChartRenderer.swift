@@ -522,8 +522,9 @@ open class PieChartRenderer: NSObject, DataRenderer
 
                     if drawXInside && drawYInside
                     {
+                        let xValue: CGFloat = x + (j % 2 == 0 ? 15.0 : -15.0)
                         context.drawText(valueText,
-                                         at: CGPoint(x: x, y: y),
+                                         at: CGPoint(x: xValue, y: y),
                                          align: .center,
                                          angleRadians: angleRadians,
                                          attributes: [.font: valueFont, .foregroundColor: valueTextColor])
