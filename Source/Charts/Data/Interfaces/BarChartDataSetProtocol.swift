@@ -33,6 +33,14 @@ public protocol BarChartDataSetProtocol: BarLineScatterCandleBubbleChartDataSetP
 
     /// the color drawing borders around the bars.
     var barBorderColor: NSUIColor { get set }
+    
+    /// This is how far (in pixels) into the dash pattern we are starting from.
+    var barBorderDashPhase: CGFloat { get }
+    
+    /// The dash pattern of the bar border line.
+    /// I.e. [2, 3] will paint [--   --   ]
+    /// [1, 3, 4, 2] will paint [-   ----  -   ----  ]
+    var barBorderDashLengths: [CGFloat]? { get set }
 
     /// the alpha value (transparency) that is used for drawing the highlight indicator bar. min = 0.0 (fully transparent), max = 1.0 (fully opaque)
     var highlightAlpha: CGFloat { get set }
