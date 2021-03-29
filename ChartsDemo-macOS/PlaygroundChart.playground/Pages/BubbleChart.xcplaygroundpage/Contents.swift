@@ -57,7 +57,7 @@ for index in 0..<ITEM_COUNT
     entries.append(BubbleChartDataEntry(x: Double(index) + 0.5, y: y, size: CGFloat(size)))
 }
 //: ### BubbleChartDataSet
-let set = BubbleChartDataSet(values: entries, label: "Bubble DataSet")
+let set = BubbleChartDataSet(entries: entries, label: "Bubble DataSet")
 set.colors = ChartColorTemplates.vordiplom()
 set.valueTextColor = NSUIColor.labelOrBlack
 set.valueFont = NSUIFont.systemFont(ofSize: CGFloat(10.0))

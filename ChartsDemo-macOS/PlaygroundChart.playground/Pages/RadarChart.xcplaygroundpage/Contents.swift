@@ -72,7 +72,7 @@ for _ in 0..<cnt
     entries2.append(RadarChartDataEntry(value: (Double(arc4random_uniform(UInt32(mult))) + min)))
 }
 //: ### RadarChartDataSet
-let set1 = RadarChartDataSet(values: entries1, label: "Last Week")
+let set1 = RadarChartDataSet(entries: entries1, label: "Last Week")
 set1.colors = [NSUIColor(red: CGFloat(103 / 255.0), green: CGFloat(110 / 255.0), blue: CGFloat(129 / 255.0), alpha: 1.0)]
 set1.fillColor = NSUIColor(red: CGFloat(103 / 255.0), green: CGFloat(110 / 255.0), blue: CGFloat(129 / 255.0), alpha: 1.0)
 set1.drawFilledEnabled = true
@@ -81,7 +81,7 @@ set1.lineWidth = 2.0
 set1.drawHighlightCircleEnabled = true
 set1.setDrawHighlightIndicators(false)
 
-let set2 = RadarChartDataSet(values: entries2, label: "This Week")
+let set2 = RadarChartDataSet(entries: entries2, label: "This Week")
 set2.colors = [NSUIColor(red: CGFloat(121 / 255.0), green: CGFloat(162 / 255.0), blue: CGFloat(175 / 255.0), alpha: 1.0)]
 set2.fillColor = NSUIColor(red: CGFloat(121 / 255.0), green: CGFloat(162 / 255.0), blue: CGFloat(175 / 255.0), alpha: 1.0)
 set2.drawFilledEnabled = true
@@ -91,7 +91,9 @@ set2.drawHighlightCircleEnabled = true
 set2.setDrawHighlightIndicators(false)
 //: ### RadarChartData
 let data = RadarChartData(dataSets: [set1, set2])
-data.setValueFont ( NSUIFont(name: "HelveticaNeue-Light", size: CGFloat(8.0)))
+if let font = NSUIFont(name: "HelveticaNeue-Light", size: CGFloat(8.0)) {
+    data.setValueFont(font)
+}
 data.setDrawValues ( false )
 data.setValueTextColor(  NSUIColor.white)
 chartView.data = data

@@ -82,12 +82,14 @@ for i in 0..<count
 }
 //: ### BarChartDataSet
 var set1 = BarChartDataSet()
-set1 = BarChartDataSet(values: yVals, label: "DataSet")
+set1 = BarChartDataSet(entries: yVals, label: "DataSet")
 set1.colors = ChartColorTemplates.vordiplom()
 
 //: ### BarChartData
 let data            = BarChartData(dataSets: [set1])
-data.setValueFont(NSUIFont(name: "HelveticaNeue-Light", size: CGFloat(10.0)))
+if let font = NSUIFont(name: "HelveticaNeue-Light", size: CGFloat(10.0)) {
+    data.setValueFont(font)
+}
 data.barWidth       = barWidth
 chartView.data = data
 

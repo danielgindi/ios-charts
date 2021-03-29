@@ -72,7 +72,7 @@ for i in 0..<ITEM_COUNT
     entries.append(CandleChartDataEntry(x: Double(i), shadowH: Double(val + high), shadowL: Double(val - low), open: Double(even ? val + open : val - open), close: Double(even ? val - close : val + close)))
     }
 //: ### CandleChartDataSet
-let set = CandleChartDataSet(values: entries, label: "Candle DataSet")
+let set = CandleChartDataSet(entries: entries, label: "Candle DataSet")
 set.colors = [#colorLiteral(red: 0.313725490196078, green: 0.313725490196078, blue: 0.313725490196078, alpha: 1.0)]
 
 set.decreasingColor = #colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1)

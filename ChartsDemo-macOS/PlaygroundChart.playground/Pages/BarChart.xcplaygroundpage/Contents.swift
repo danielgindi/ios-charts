@@ -43,7 +43,7 @@ for i in 0..<7
 }
 //: ### BarChartDataSet
 var set1 = BarChartDataSet()
-set1 = BarChartDataSet(values: yVals, label: "DataSet")
+set1 = BarChartDataSet(entries: yVals, label: "DataSet")
 set1.colors = ChartColorTemplates.vordiplom()
 set1.drawValuesEnabled = true
 

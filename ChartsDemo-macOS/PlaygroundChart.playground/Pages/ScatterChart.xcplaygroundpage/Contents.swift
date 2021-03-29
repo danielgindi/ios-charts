@@ -64,19 +64,19 @@ for i in 0..<count
     yVals3.append(ChartDataEntry(x: Double(i) + 0.66, y: val))
 }
 //: ### ScatterChartDataSet
-let set1 = ScatterChartDataSet(values: yVals1, label: "DS 1")
+let set1 = ScatterChartDataSet(entries: yVals1, label: "DS 1")
 set1.setScatterShape(.square )
 set1.colors =  ChartColorTemplates.liberty()
 set1.scatterShapeSize = 10.0
 
-let set2 = ScatterChartDataSet(values: yVals2, label: "DS 2")
+let set2 = ScatterChartDataSet(entries: yVals2, label: "DS 2")
 set2.setScatterShape( .circle)
 set2.scatterShapeHoleColor = NSUIColor.blue
 set2.scatterShapeHoleRadius = 3.5
 set2.colors = ChartColorTemplates.material()
 set2.scatterShapeSize = 10.0
 
-let set3 = ScatterChartDataSet(values: yVals3, label: "DS 3")
+let set3 = ScatterChartDataSet(entries: yVals3, label: "DS 3")
 set3.setScatterShape(.triangle)
 set3.colors = [NSUIColor.orange] //ChartColorTemplates.pastel()
 set3.scatterShapeSize = 10.0
@@ -87,7 +87,9 @@ dataSets.append(set2)
 dataSets.append(set3)
 //: ### ScatterChartData
 let data = ScatterChartData(dataSets: dataSets)
-data.setValueFont( NSUIFont(name: "HelveticaNeue-Light", size: CGFloat(7.0)))
+if let font = NSUIFont(name: "HelveticaNeue-Light", size: CGFloat(7.0)) {
+    data.setValueFont(font)
+}
 chartView.data = data
 
 chartView.animate(xAxisDuration: 2.0, yAxisDuration: 2.0, easingOption: .easeInBounce)

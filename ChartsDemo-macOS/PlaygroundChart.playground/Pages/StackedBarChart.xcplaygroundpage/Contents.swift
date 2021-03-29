@@ -92,7 +92,7 @@ formatter.maximumFractionDigits = 1
 formatter.negativeSuffix = " %"
 formatter.positiveSuffix = " %"
 
-set1 = BarChartDataSet(values: yVals, label: "Stack")
+set1 = BarChartDataSet(entries: yVals, label: "Stack")
 set1.colors = [ChartColorTemplates.material()[0], ChartColorTemplates.material()[1], ChartColorTemplates.material()[2]]
 set1.valueFont = NSUIFont(name: "HelveticaNeue-Light", size: CGFloat(10.0))!
 set1.valueFormatter = DefaultValueFormatter(formatter: formatter )
