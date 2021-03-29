@@ -197,7 +197,7 @@ open class ChartDataSet: ChartBaseDataSet
     open override func entriesForXValue(_ xValue: Double) -> [ChartDataEntry]
     {
         let match: (ChartDataEntry) -> Bool = { $0.x == xValue }
-        let i = partitioningIndex(where: match)
+        let i = partitioningIndex { $0.x >= xValue }
         guard i < endIndex else { return [] }
         return self[i...].prefix(while: match)
     }
