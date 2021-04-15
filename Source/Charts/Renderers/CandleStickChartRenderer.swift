@@ -158,6 +158,10 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer
                 
                 trans.rectValueToPixel(&_bodyRect)
                 
+                
+                // define roundedRect for corner radius
+                let roundedRect = UIBezierPath(roundedRect: _bodyRect, cornerRadius: dataSet.barCornerRadius)
+                
                 // draw body differently for increasing and decreasing entry
 
                 if open > close
@@ -169,7 +173,8 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer
                     if dataSet.isDecreasingFilled
                     {
                         context.setFillColor(color.cgColor)
-                        context.fill(_bodyRect)
+                        context.addPath(roundedRect.cgPath)
+                        context.drawPath(using: .fill)
                     }
                     else
                     {
@@ -186,7 +191,8 @@ open class CandleStickChartRenderer: LineScatterCandleRadarRenderer
                     if dataSet.isIncreasingFilled
                     {
                         context.setFillColor(color.cgColor)
-                        context.fill(_bodyRect)
+                        context.addPath(roundedRect.cgPath)
+                        context.drawPath(using: .fill)
                     }
                     else
                     {
