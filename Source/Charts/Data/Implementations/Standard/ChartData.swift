@@ -422,7 +422,7 @@ open class ChartData: NSObject, ExpressibleByArrayLiteral
     /// The DataSet object with the maximum number of entries or null if there are no DataSets.
     @objc open var maxEntryCountSet: Element?
     {
-        return self.max { $0.entryCount > $1.entryCount }
+        return self.max(by: \.entryCount)
     }
 }
 
