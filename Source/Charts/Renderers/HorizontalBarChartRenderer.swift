@@ -365,18 +365,15 @@ open class HorizontalBarChartRenderer: BarChartRenderer
                         let rect = buffer.rects[j]
                         
                         let y = rect.origin.y + rect.size.height / 2.0
+                        let x = rect.origin.x + rect.size.width
                         
-                        if !viewPortHandler.isInBoundsTop(rect.origin.y)
+                        if !viewPortHandler.isInBoundsTop(y)
                         {
                             break
                         }
                         
-                        if !viewPortHandler.isInBoundsX(rect.origin.x)
-                        {
-                            continue
-                        }
-                        
-                        if !viewPortHandler.isInBoundsBottom(rect.origin.y)
+                        if !viewPortHandler.isInBoundsX(x)
+                            || !viewPortHandler.isInBoundsBottom(y)
                         {
                             continue
                         }
