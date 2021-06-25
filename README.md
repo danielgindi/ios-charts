@@ -58,6 +58,8 @@ In order to correctly compile:
 * [Beginning Set-up and Example Using Charts with Swift 3](https://github.com/annalizhaz/ChartsForSwiftBasic)
 * [Creating a Radar Chart in Swift (David Piper)](https://medium.com/@HeyDaveTheDev/creating-a-radar-chart-in-swift-5791afcf92f0)
 * [Plotting in IOS using Charts framework with SwiftUI (Evgeny Basisty)](https://medium.com/@zzzzbh/plotting-in-ios-using-charts-framework-with-swiftui-222034a2bea6)
+*   [Set Up a Basic Bar Chart Using iOS-Charts (Penny Huang)](https://medium.com/@penny-huang/swift-setting-up-a-basic-bar-chart-using-ios-charts-afd6aad96ac)
+*  [iOS-Charts Tutorial: Highlight Selected Value With a Custom Marker (Penny Huang)](https://medium.com/@penny-huang/swift-ios-charts-tutorial-highlight-selected-value-with-a-custom-marker-30ccbf92aa1b)
 
 Want your tutorial to show here? Create a PR!
 
