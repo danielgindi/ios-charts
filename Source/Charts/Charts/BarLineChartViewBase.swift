@@ -652,11 +652,19 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
                         location.y = -(viewPortHandler.chartHeight - location.y - viewPortHandler.offsetBottom)
                     }
                     
-                    let scaleX = canZoomMoreX ? recognizer.nsuiScale : 1.0
-                    let scaleY = canZoomMoreY ? recognizer.nsuiScale : 1.0
+                    let scaleXFactor = canZoomMoreX ? recognizer.nsuiScale : 1.0
+                    let scaleYFactor = canZoomMoreY ? recognizer.nsuiScale : 1.0
+                    
+                    //Clip scale to limits
+                    let clippedScaleX = min(max(viewPortHandler.minScaleX, self.scaleX * scaleXFactor), viewPortHandler.maxScaleX)
+                    let clippedScaleY = min(max(viewPortHandler.minScaleY,  self.scaleY * scaleYFactor), viewPortHandler.maxScaleY)
+
+                    //Recreate scale factors but clipped to limits
+                    let clippedScaleXFactor = clippedScaleX / self.scaleX
+                    let clippedScaleYFactor = clippedScaleY / self.scaleY
                     
                     var matrix = CGAffineTransform(translationX: location.x, y: location.y)
-                    matrix = matrix.scaledBy(x: scaleX, y: scaleY)
+                    matrix = matrix.scaledBy(x: clippedScaleXFactor, y: clippedScaleYFactor)
                     matrix = matrix.translatedBy(x: -location.x, y: -location.y)
                     
                     matrix = viewPortHandler.touchMatrix.concatenating(matrix)
@@ -665,7 +673,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
 
                     if delegate !== nil
                     {
-                        delegate?.chartScaled?(self, scaleX: scaleX, scaleY: scaleY)
+                        delegate?.chartScaled?(self, scaleX: clippedScaleXFactor, scaleY: clippedScaleYFactor)
                     }
                 }
                 
