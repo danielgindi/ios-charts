@@ -491,28 +491,38 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
             isDrawMarkersEnabled,
             valuesToHighlight()
             else { return }
-        
+
+        var drawYMax: CGFloat = 1000.0
+
         for highlight in highlighted
         {
-            guard
-                let set = data?[highlight.dataSetIndex],
-                let e = data?.entry(for: highlight)
-                else { continue }
-            
-            let entryIndex = set.entryIndex(entry: e)
-            guard entryIndex <= Int(Double(set.entryCount) * chartAnimator.phaseX) else { continue }
-
-            let pos = getMarkerPosition(highlight: highlight)
-
-            // check bounds
-            guard viewPortHandler.isInBounds(x: pos.x, y: pos.y) else { continue }
-
-            // callbacks to update the content
-            marker.refreshContent(entry: e, highlight: highlight)
-            
-            // draw the marker
-            marker.draw(context: context, point: pos)
+            if highlight.drawY < drawYMax {
+                drawYMax = highlight.drawY
+            }
         }
+
+        let highlightMax = highlighted.filter { bar in
+            bar.drawY == drawYMax
+        }[0]
+
+        guard
+            let set = data?[highlightMax.dataSetIndex],
+            let e = data?.entry(for: highlightMax)
+            else { return }
+
+        let entryIndex = set.entryIndex(entry: e)
+        guard entryIndex <= Int(Double(set.entryCount) * chartAnimator.phaseX) else { return }
+
+        let pos = getMarkerPosition(highlight: highlightMax)
+
+        // check bounds
+        guard viewPortHandler.isInBounds(x: pos.x, y: pos.y) else { return }
+
+        // callbacks to update the content
+        marker.refreshContent(entry: e, highlight: highlightMax)
+
+        // draw the marker
+        marker.draw(context: context, point: pos)
     }
     
     /// - Returns: The actual position in pixels of the MarkerView for the given Entry in the given DataSet.
