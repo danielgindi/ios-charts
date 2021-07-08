@@ -491,8 +491,36 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
             isDrawMarkersEnabled,
             valuesToHighlight()
             else { return }
+
         
-        for highlight in highlighted
+        // Find unique data indexes.
+        var uniqueIndices: [Int] = []
+        
+        for highlight in highlighted {
+            if uniqueIndices.contains(highlight.dataIndex) {
+                continue
+            }
+            
+            uniqueIndices.append(highlight.dataIndex)
+        }
+        
+        // Find tallest items given each data index.
+        var filteredHighlighted: [Highlight] = []
+        for index in uniqueIndices {
+            let itemsWithSameIndex = highlighted.filter { $0.dataIndex == index }
+            
+            var drawYMax: CGFloat = 1000.0
+            var tallestItem = itemsWithSameIndex[0]
+            for item in itemsWithSameIndex {
+                if item.drawY < drawYMax {
+                    drawYMax = item.drawY
+                    tallestItem = item
+                }
+            }
+            filteredHighlighted.append(tallestItem)
+        }
+
+        for highlight in filteredHighlighted
         {
             guard
                 let set = data?[highlight.dataSetIndex],
